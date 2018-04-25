@@ -13,7 +13,11 @@ lazy val scalaVersionSettings = Seq(
   crossScalaVersions := Seq("2.10.7", "2.11.12", "2.13.0-M3", scalaVersion.value)
 )
 
-lazy val sharedSettings = MimaSettings.settings ++ scalaVersionSettings ++ Seq(
+lazy val mimaSettings: Seq[Setting[_]] =
+  MimaSettings.settings :+
+  (mimaPreviousArtifacts := Set("org.scalacheck" %% "scalacheck" % "1.14.0"))
+
+lazy val sharedSettings = scalaVersionSettings ++ Seq(
 
   name := "scalacheck",
 
@@ -78,7 +82,6 @@ lazy val sharedSettings = MimaSettings.settings ++ scalaVersionSettings ++ Seq(
   // don't use fatal warnings in tests
   scalacOptions in Test ~= (_ filterNot (_ == "-Xfatal-warnings")),
 
-  mimaPreviousArtifacts := Set("org.scalacheck" %% "scalacheck" % "1.14.0"),
 
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
@@ -120,6 +123,7 @@ lazy val js = project.in(file("js"))
 
 lazy val jvm = project.in(file("jvm"))
   .settings(sharedSettings: _*)
+  .settings(mimaSettings: _*)
   .settings(
     libraryDependencies += "org.scala-sbt" %  "test-interface" % "1.0"
   )
